@@ -1,0 +1,102 @@
+.swal2-popup .swal2-header {
+  align-items: flex-start;
+}
+.swal2-popup .swal2-styled.swal2-confirm,
+.swal2-popup .swal2-styled.swal2-cancel,
+.swal2-popup .swal2-title,
+.swal2-content {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+}
+
+.swal2-popup {
+  width: 100%;
+  max-width: 600px;
+}
+
+.swal2-popup .swal2-title {
+  text-align: left !important;
+  color: #4f4f4f !important;
+  font-size: 20px !important;
+  justify-content: center;
+  width: 100%;
+}
+
+.swal2-icon.swal2-success [class^="swal2-success-line"] {
+  background-color: #2ed4a2 !important;
+}
+
+.swal2-popup .swal2-input[type="number"] {
+  max-width: 100% !important;
+  height: 2em;
+}
+.swal2-popup .swal2-actions{
+  display: flex;
+  justify-content: space-around;
+  margin: 1.25em 0 0;
+}
+.swal2-popup .swal2-styled.swal2-confirm {
+  display: block;
+  width: 210px;
+  padding: 15px 0;
+  border-radius: 50px;
+  text-align: center;
+  margin: 2.5px auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  max-height: 55px;
+  line-height: 1.5;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s;
+  background-color: var(--danger-color);
+  border: 0.09em solid var(--danger-color);
+  color: #fff;
+}
+.swal2-popup .swal2-styled.swal2-cancel{
+  display: block;
+  width: 210px;
+  padding: 15px 0;
+  border-radius: 50px;
+  text-align: center;
+  margin: 2.5px auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  max-height: 55px;
+  line-height: 1.5;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s;
+  background-color:var(--primary-color);
+  color: #fff;
+  border: 0.09em solidvar(--primary-color);
+}
+.swal2-popup .swal2-styled.swal2-cancel{
+  background-color:var(--primary-color);
+}
+/* .swal2-popup .swal2-styled.swal2-confirm:hover {
+  background-color: #fff !important;
+  color: var(--default-blue);
+} */
+
+.swal2-icon.swal2-success {
+  border-color: #2ed4a2 !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(46, 212, 162, 0.2) !important;
+}
+
+.swal2-popup .swal2-styled:focus {
+  box-shadow: none !important;
+}
+
+.swal2-popup-text{
+  margin-top: 15px;
+  padding: 15px 0 15px 0;  
+}
+body.swal2-height-auto{
+  min-height: 100vh;
+}
+body.swal2-height-auto #app{
+  min-height: 100vh;
+}
