@@ -42,7 +42,12 @@ export class AlexaAuthorizationService {
     return await this.AlexaTokenRepository.save(token)
   }
   findByUserId(userId: string): Promise<AlexaTokenEntity> {
-    return this.AlexaTokenRepository.findOne({ user_id: userId })
+    return this.AlexaTokenRepository.findOne({
+      where: { user_id: userId },
+      order: {
+        created_at: 'DESC'
+      }
+    })
   }
 
   async getCredentials(userId: string) {

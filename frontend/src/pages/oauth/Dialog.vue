@@ -14,11 +14,17 @@
           ></v-progress-circular>
         </div>
         <template v-if="!loading && !error">
-          <div class="subtitle">Scopes</div>
+          <div class="subtitle">Request acess to</div>
           <v-divider></v-divider>
           <div class="scopes">
-            <v-chip class="ma-2" color="green-theme" text-color="white">
-              Green Chip
+            <v-chip
+              class="ma-4"
+              color="success"
+              text-color="white"
+              v-for="item in scopes"
+              :key="item.value"
+            >
+              {{ item.label }}
             </v-chip>
           </div>
 
@@ -45,6 +51,8 @@
 import { AUTH_DIALOG, AUTH_AUTORIZE } from '@/store/actions/auth'
 import * as _ from 'lodash'
 import { mapGetters } from 'vuex'
+import { OauthScopeLabel } from '../../types/oauth-scopes'
+
 export default {
   name: 'OauthDialog',
   data: () => ({
@@ -58,9 +66,13 @@ export default {
     ...mapGetters(['isAuthenticated']),
   },
   created() {
-    const { client_id, redirect_uri } = this.$route.query
-    console.log(this.$route)
+    const { client_id, redirect_uri, scope = '' } = this.$route.query
     if (this.isAuthenticated) {
+      const scopes = scope.split(' ')
+      this.scopes = scopes.map(item => ({
+        label: _.get(OauthScopeLabel, item, item),
+        value: item,
+      }))
       this.$store
         .dispatch(AUTH_DIALOG, {
           client_id,
@@ -68,7 +80,6 @@ export default {
         })
         .then(resp => {
           this.application = _.get(resp, 'name', 'Alexa')
-          this.scopes = _.get(resp, 'scopes', [])
           this.loading = false
         })
         .catch(() => {

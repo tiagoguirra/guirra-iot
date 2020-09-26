@@ -57,7 +57,7 @@ export class DeviceService {
       take,
       skip,
       order: {
-        [orderBy]: orderDir
+        [orderBy || 'name']: orderDir || 'ASC'
       }
     })
     return normalizeListResponse<DeviceDto>(result, total, page, perpage)

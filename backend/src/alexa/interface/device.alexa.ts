@@ -7,6 +7,7 @@ import {
   DeviceMapCategories,
   AlexaCategories
 } from '../dto/alexa-categories.dto'
+import { AlexaControllerMap } from '../dto/alexa-controller-map.dto'
 
 export class DeviceAlexa {
   protected capabilities: {
@@ -47,7 +48,14 @@ export class DeviceAlexa {
       description: 'Smart Home DIY',
       displayCategories:
         categories.length > 0 ? categories : [AlexaCategories.OTHER],
-      capabilities
+      capabilities: [
+        ...capabilities,
+        {
+          type: 'AlexaInterface',
+          interface: 'Alexa',
+          version: '3'
+        }
+      ]
     }
   }
   change(
@@ -60,15 +68,11 @@ export class DeviceAlexa {
     },
     payload: any
   ) {
-    switch (namespace) {
-      case 'Alexa.PowerController':
-        return this.capabilities['power'].change(name)
-      case 'Alexa.BrightnessController':
-      case 'Alexa.ColorController':
-      case 'Alexa.LockController':
-      default:
-        throw new Error('Device not suport this')
+    const handler = _.get(AlexaControllerMap, namespace)
+    if (handler) {
+      return this.capabilities[handler].change({ name, namespace }, payload)
     }
+    throw new Error('Device not suport this')
   }
   async reportState() {
     const state = []

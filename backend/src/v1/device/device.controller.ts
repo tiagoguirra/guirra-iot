@@ -15,7 +15,6 @@ import { Response } from 'express'
 import * as _ from 'lodash'
 import { DeviceInputDto, DeviceChangeInput } from 'src/dto/device.dto'
 import { DeviceService } from 'src/device/service/device.service'
-import { property } from 'lodash'
 import { AlexaEventService } from '../../alexa/service/alexa-event.service'
 
 @Controller('v1/device')
@@ -217,8 +216,8 @@ export class DeviceController {
   async list(
     @Param('page') page: number = 1,
     @Param('perpage') perpage: number = 20,
-    @Param('orderBy') orderBy: string = '',
-    @Param('orderDir') orderDir: string = '',
+    @Param('orderBy') orderBy: string = 'name',
+    @Param('orderDir') orderDir: string = 'ASC',
     @Param('search') search: string = '',
     @Param('category') category: string = '',
     @UserContext('user_id') userId: string,

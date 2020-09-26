@@ -1,29 +1,18 @@
 <template>
-  <v-tabs
-    class="tab-main"
-    background-color="#1c1c1c"
-    dark
-    vertical
-    v-model="tab"
-  >
-    <v-tabs-slider></v-tabs-slider>
-    <v-tab class="tab-titulo" key="tab-control" link to="/devices">
-      Devices
-    </v-tab>
-    <v-tabs-items class="tab-conteudo">
-      <transition mode="out-in">
-        <router-view class="child-view view-parent"></router-view>
-      </transition>
-    </v-tabs-items>
-  </v-tabs>
+  <div class="page-fluid">
+    <Menu />
+    <transition mode="out-in">
+      <router-view class="child-view view-parent"></router-view>
+    </transition>
+  </div>
 </template>
 
 <script>
+import Menu from '../components/Menu'
 export default {
   name: 'Home',
-  data: () => ({
-    tab: '/'
-  })
+  components: { Menu },
+  data: () => ({}),
 }
 </script>
 

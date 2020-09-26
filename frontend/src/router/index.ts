@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import Home from '../pages/Home.vue'
-import Device from '../pages/device/Device.vue'
-import DeviceSettings from '../pages/device/Settings.vue'
+import Devices from '../pages/devices/Devices.vue'
 import OauthLogin from '../pages/oauth/Login.vue'
 import OauthDialog from '../pages/oauth/Dialog.vue'
 import { ifAuthenticated, ifNotAuthenticated } from './guards'
+import Device from '../pages/devices/Device.vue'
 
 Vue.use(VueRouter)
 
@@ -24,17 +24,12 @@ const routes: Array<RouteConfig> = [
       {
         path: 'devices',
         name: 'DevicesList',
-        component: Device,
+        component: Devices,
         children: [
           {
             path: ':id',
-            name: 'DeviceDetails',
-            component: DeviceSettings,
-          },
-          {
-            name: 'DeviceSettings',
-            path: ':id/settings',
-            component: DeviceSettings,
+            name: 'Device',
+            component: Device,
           },
         ],
       },

@@ -1,0 +1,5 @@
+export const DEVICE_LIST = 'DEVICE_LIST'
+export const DEVICE_CHANGE = 'DEVICE_CHANGE'
+export const DEVICE_STATUS = 'DEVICE_STATUS'
+export const DEVICE_GET = 'DEVICE_GET'
+export const DEVICE_UPDATE = 'DEVICE_UPDATE'

@@ -7,7 +7,7 @@ export class DeviceShadow {
   private shandowName: string
   private lastState?: {
     timestamp: number
-    state: IotData.GetThingShadowResponse
+    payload: any
   }
   constructor(shandowName: string) {
     this.shandowName = shandowName
@@ -39,12 +39,27 @@ export class DeviceShadow {
       })
     })
   }
-  private requestState() {
+  requestState(): Promise<{
+    payload: any
+    state: any
+    delta: any
+    last_report: any
+    timestamp: number
+  }> {
     return new Promise((resolve, reject) => {
-      if (this.lastState && this.lastState.state) {
+      if (this.lastState && this.lastState.payload) {
         const now = new Date().getTime()
         if (now - this.lastState.timestamp < 2000) {
-          return resolve(this.lastState.state)
+          return resolve({
+            payload: this.lastState.payload,
+            state: _.get(this.lastState.payload, ['state', 'reported']),
+            delta: _.get(this.lastState.payload, ['state', 'delta']),
+            last_report: _.get(this.lastState.payload, [
+              'metadata',
+              'reported'
+            ]),
+            timestamp: new Date().getTime()
+          })
         }
       }
       this.AwsIot.getThingShadow(
@@ -55,11 +70,18 @@ export class DeviceShadow {
           if (err) {
             reject(err)
           } else {
+            const payload = JSON.parse(_.get(data, 'payload').toString())
             this.lastState = {
-              state: data,
+              payload,
               timestamp: new Date().getTime()
             }
-            resolve(data)
+            resolve({
+              payload,
+              state: _.get(payload, ['state', 'reported']),
+              delta: _.get(payload, ['state', 'delta']),
+              last_report: _.get(payload, ['metadata', 'reported']),
+              timestamp: new Date().getTime()
+            })
           }
         }
       )
@@ -70,8 +92,7 @@ export class DeviceShadow {
   ): Promise<DeviceShadowState | DeviceShadowState[]> {
     return new Promise((resolve, reject) => {
       this.requestState()
-        .then((data: IotData.GetThingShadowResponse) => {
-          const payload = JSON.parse(data.payload.toString())
+        .then(({ payload }) => {
           if (property) {
             resolve({
               property,
@@ -113,8 +134,7 @@ export class DeviceShadow {
   getSettings(): Promise<DeviceShadowSettings> {
     return new Promise((resolve, reject) => {
       this.requestState()
-        .then((data: IotData.GetThingShadowResponse) => {
-          const payload = JSON.parse(data.payload.toString())
+        .then(({ payload }) => {
           resolve({
             initial_state: _.get(payload, [
               'state',

@@ -1,19 +1,20 @@
 import { PropertyCapability } from './PropertyCapability'
-import { PowerHandler } from 'src/device/interface/handlers'
+import { BrightnessHandler } from 'src/device/interface/handlers'
+import * as _ from 'lodash'
 
-export class PowerCapability extends PropertyCapability {
+export class BrightnessCapability extends PropertyCapability {
   init() {
-    this.handler = new PowerHandler(this.shadow)
+    this.handler = new BrightnessHandler(this.shadow)
   }
   discovery() {
     return {
       type: 'AlexaInterface',
-      interface: 'Alexa.PowerController',
+      interface: 'Alexa.BrightnessController',
       version: '3',
       properties: {
         supported: [
           {
-            name: 'powerState'
+            name: 'brightness'
           }
         ],
         proactivelyReported: this.proactively,
@@ -21,13 +22,13 @@ export class PowerCapability extends PropertyCapability {
       }
     }
   }
-  async change({ name: value }: { name: string }) {
-    const _value = value === 'TurnOn' ? 'ON' : 'OFF'
-    await this.handler.set(_value)
+  async change({}, payload: any) {
+    const value = _.get(payload, 'brightness', 0)
+    await this.handler.set(value)
     return {
-      namespace: 'Alexa.PowerController',
-      name: 'powerState',
-      value: _value,
+      namespace: 'Alexa.BrightnessController',
+      name: 'brightness',
+      value: value,
       timeOfSample: new Date().toISOString(),
       uncertaintyInMilliseconds: this.uncertainty
     }
@@ -35,8 +36,8 @@ export class PowerCapability extends PropertyCapability {
   async ReportState() {
     const state = await this.handler.get()
     return {
-      namespace: 'Alexa.PowerController',
-      name: 'powerState',
+      namespace: 'Alexa.BrightnessController',
+      name: 'brightness',
       value: state.state,
       timeOfSample: new Date().toISOString(),
       uncertaintyInMilliseconds: 0

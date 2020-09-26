@@ -10,7 +10,6 @@ export abstract class PropertyHandler {
   }
   initial?: DeviceValue | DeviceValue[]
   property: DevicePropertyType
-  abstract discovery(): any
   abstract set(value: DeviceValue | DeviceValue[]): Promise<void>
   abstract get(): Promise<DeviceShadowState>
   abstract getInitial(): Promise<DeviceInitialState>

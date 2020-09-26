@@ -24,6 +24,7 @@ export default {
 @import '@/assets/css/global.scss';
 @import '@/assets/css/toast.scss';
 @import '@/assets/css/sweet-alert.scss';
+@import '@/assets/css/grid.scss';
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

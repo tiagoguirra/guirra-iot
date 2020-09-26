@@ -28,5 +28,8 @@ export abstract class PropertyCapability {
   abstract discovery(): any
   abstract ReportState(): any
   abstract init(): void
-  abstract change(value: any): Promise<any>
+  abstract change(
+    { name, namespace }: { name: string; namespace: string },
+    payload: any
+  ): Promise<any>
 }

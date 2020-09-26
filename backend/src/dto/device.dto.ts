@@ -16,6 +16,7 @@ export class DeviceInputPropertyDto {
   initial: DeviceValue | DeviceValue[]
   proactively?: boolean
   retrievable?: boolean
+  default?: boolean
 }
 
 export class DeviceInputModesDto {

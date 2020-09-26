@@ -1,5 +1,6 @@
 export enum DeviceCategory {
-  ligth = 'ligth',
+  light = 'light',
   switch = 'switch',
-  others = 'others'
+  others = 'others',
+  smartlock = 'smartlock'
 }

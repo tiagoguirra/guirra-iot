@@ -1,19 +1,20 @@
 import { PropertyCapability } from './PropertyCapability'
-import { PowerHandler } from 'src/device/interface/handlers'
+import { LockHandler } from 'src/device/interface/handlers'
+import * as _ from 'lodash'
 
-export class PowerCapability extends PropertyCapability {
+export class LockCapability extends PropertyCapability {
   init() {
-    this.handler = new PowerHandler(this.shadow)
+    this.handler = new LockHandler(this.shadow)
   }
   discovery() {
     return {
       type: 'AlexaInterface',
-      interface: 'Alexa.PowerController',
+      interface: 'Alexa.LockController',
       version: '3',
       properties: {
         supported: [
           {
-            name: 'powerState'
+            name: 'lockState'
           }
         ],
         proactivelyReported: this.proactively,
@@ -21,13 +22,12 @@ export class PowerCapability extends PropertyCapability {
       }
     }
   }
-  async change({ name: value }: { name: string }) {
-    const _value = value === 'TurnOn' ? 'ON' : 'OFF'
-    await this.handler.set(_value)
+  async change({ name }) {
+    await this.handler.set(name)
     return {
-      namespace: 'Alexa.PowerController',
-      name: 'powerState',
-      value: _value,
+      namespace: 'Alexa.LockController',
+      name: 'lockState',
+      value: name,
       timeOfSample: new Date().toISOString(),
       uncertaintyInMilliseconds: this.uncertainty
     }
@@ -35,8 +35,8 @@ export class PowerCapability extends PropertyCapability {
   async ReportState() {
     const state = await this.handler.get()
     return {
-      namespace: 'Alexa.PowerController',
-      name: 'powerState',
+      namespace: 'Alexa.LockController',
+      name: 'lockState',
       value: state.state,
       timeOfSample: new Date().toISOString(),
       uncertaintyInMilliseconds: 0

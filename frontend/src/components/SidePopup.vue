@@ -49,41 +49,41 @@ export default {
   props: {
     title: {
       type: String,
-      required: false
+      required: false,
     },
     hideBackButton: {
       type: Boolean,
       default: false,
-      required: false
+      required: false,
     },
     overlayNotBack: {
       type: Boolean,
       default: false,
-      required: false
+      required: false,
     },
     routeback: {
       type: String,
       default: '',
-      required: false
+      required: false,
     },
     hideCancel: {
       type: Boolean,
       default: false,
-      required: false
+      required: false,
     },
     cancelText: {
       type: String,
       default: 'Close',
-      required: false
+      required: false,
     },
     loading: {
       type: Boolean,
       default: false,
-      required: false
-    }
+      required: false,
+    },
   },
   data: () => ({
-    popUpKey: Math.random() * 1000
+    popUpKey: Math.random() * 1000,
   }),
 
   methods: {
@@ -106,16 +106,16 @@ export default {
       if (!this.loading) {
         this.$emit('submit')
       }
-    }
+    },
   },
   mounted() {
     document.body.scrollTop = 0
     document.documentElement.scrollTop = 0
-  }
+  },
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .container-popup-side {
   width: 100%;
   min-height: 100%;
@@ -126,6 +126,7 @@ export default {
   z-index: 100;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   margin-right: 0px;
   padding: 40px;
   z-index: 900;
@@ -155,9 +156,8 @@ export default {
     animation: enterAnime 1s ease-in-out;
   }
   .section-container {
-    width: 40%;
-    max-width: 1200px;
-    min-height: 80%;
+    flex: 1;
+    max-width: 400px;
     background-color: #fff;
     z-index: 105;
     position: relative;
@@ -165,7 +165,7 @@ export default {
   .headerPopUp {
     width: 100%;
     height: 52px;
-    padding: 15px 50px 15px 20px;
+    padding: 15px;
     color: var(--primary-color);
     background-color: #fff;
     display: flex;
@@ -208,11 +208,7 @@ export default {
     }
   }
 }
-@media (max-width: 920px) {
-  .section-container {
-    width: 100%;
-  }
-}
+
 @keyframes enterAnime {
   0% {
     opacity: 0;
