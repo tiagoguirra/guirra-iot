@@ -16,12 +16,14 @@ import * as _ from 'lodash'
 import { DeviceInputDto, DeviceChangeInput } from 'src/dto/device.dto'
 import { DeviceService } from 'src/device/service/device.service'
 import { AlexaEventService } from '../../alexa/service/alexa-event.service'
+import { DeviceHistoryService } from 'src/device/service/device-history.service'
 
 @Controller('v1/device')
 export class DeviceController {
   constructor(
     private readonly DeviceService: DeviceService,
-    private readonly AlexaEventService: AlexaEventService
+    private readonly AlexaEventService: AlexaEventService,
+    private readonly DeviceHistoryService: DeviceHistoryService
   ) {}
   @Post('/')
   async register(
@@ -265,6 +267,34 @@ export class DeviceController {
           }
         ]
       })
+    } catch (err) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: [
+          {
+            message: _.get(err, 'message', 'Interal server error'),
+            code: _.get(err, 'code', '')
+          }
+        ]
+      })
+    }
+  }
+  @Get('/:id/history')
+  async history(
+    @Param('id') deviceId: string,
+    @Param('page') page: number = 1,
+    @Param('perpage') perpage: number = 20,
+    @Param('orderBy') orderBy: string = 'created_at',
+    @Param('orderDir') orderDir: string = 'DESC',
+    @Res() res: Response
+  ) {
+    try {
+      const historic = await this.DeviceHistoryService.list(deviceId, {
+        page,
+        perpage,
+        orderBy,
+        orderDir
+      })
+      return res.status(HttpStatus.OK).send(historic)
     } catch (err) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         error: [

@@ -7,12 +7,14 @@ import { DeviceInputDto, DeviceChangeInput } from 'src/dto/device.dto'
 import { ModelWithPaginate } from 'src/entity/model'
 import { Device } from '../interface/device'
 import { DeviceDto } from '../dto/device.dto'
+import { DeviceHistoryService } from './device-history.service'
 
 @Injectable()
 export class DeviceService {
   constructor(
     @InjectRepository(DeviceEntity)
-    private readonly DeviceRepository: Repository<DeviceEntity>
+    private readonly DeviceRepository: Repository<DeviceEntity>,
+    private readonly DeviceHistoryService: DeviceHistoryService
   ) {}
 
   getById(userId: string, deviceId: string) {
@@ -112,6 +114,10 @@ export class DeviceService {
     if (device) {
       const deviceHandler = new Device(device.toJson())
       await deviceHandler.set(propetyChange.property, propetyChange.value)
+      await this.DeviceHistoryService.changeValue(userId, deviceId, 'web', {
+        property: propetyChange.property,
+        value: propetyChange.value
+      })
       return device
     }
     return null

@@ -7,6 +7,7 @@ import {
   JoinColumn
 } from 'typeorm'
 import { DeviceEntity } from './device.entity'
+import { DeviceHistoricMetadata } from '../dto/device-historic.dto'
 
 @Entity('device_history')
 export class DeviceHistoryEntity extends Model {
@@ -25,6 +26,12 @@ export class DeviceHistoryEntity extends Model {
 
   @Column('varchar')
   event: string
+
+  @Column('varchar')
+  origem: string
+
+  @Column('json', { nullable: true })
+  metadata: DeviceHistoricMetadata[]
 
   @Column('uuid', { nullable: true })
   user_id: string

@@ -32,7 +32,7 @@ export class DeviceEntity extends Model {
   @Column('jsonb')
   properties: DeviceProperty[]
 
-  @Column('jsonb')
+  @Column('jsonb', { nullable: true })
   modes: DeviceMode[]
 
   @OneToMany(
