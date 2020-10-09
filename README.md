@@ -53,3 +53,13 @@ and put the lambda function ARN.
 use https://frontend-address/v1/oauth/token then put alexa client id and secret
 
 11 - Done, now just add your devices, visit the [devices repository](https://github.com/tiagoguirra/iot-devices)
+
+### Preview
+
+Change light device, with power, color and brigtness property.
+![light device preview](https://github.com/tiagoguirra/guirra-iot/blob/master/preview/led-device.jpeg)
+
+List iot devices, every device has a controll and status of property default.
+![list device preview](https://github.com/tiagoguirra/guirra-iot/blob/master/preview/devices.jpeg)
+
+
