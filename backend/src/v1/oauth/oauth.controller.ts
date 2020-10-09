@@ -80,6 +80,10 @@ export class OauthController {
     @Body('grant_type') grant: string,
     @Body('client_id') clientId: string,
     @Body('redirect_uri') redirectUri: string,
+    @Body('client_secret') clientSecret: string,
+    @Body('username') username: string,
+    @Body('password') password: string,
+    @Body('scope') scope: string[],
     @Res() res: Response
   ) {
     try {
@@ -93,8 +97,16 @@ export class OauthController {
       } else if (grant === 'refresh_token') {
         tokens = await this.OauthService.autorizationRefreshToken(
           clientId,
-          redirectUri,
+          redirectUri || clientSecret,
           refreshToken
+        )
+      } else if (grant === 'password') {
+        tokens = await this.OauthService.autorizationPassword(
+          clientId,
+          clientSecret,
+          username,
+          password,
+          scope
         )
       }
       if (!tokens) {

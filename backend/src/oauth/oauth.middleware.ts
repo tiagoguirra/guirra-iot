@@ -12,8 +12,10 @@ export class OauthMiddleware implements NestMiddleware {
       const authorization = _.get(req, 'headers.authorization', '')
       if (authorization) {
         const oauthResolve = await this.OauthService.verify(authorization)
-        req.oauth = oauthResolve
-        return next()
+        if (oauthResolve) {
+          req.oauth = oauthResolve
+          return next()
+        }
       }
       res.status(HttpStatus.UNAUTHORIZED).json({
         error: [

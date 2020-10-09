@@ -42,18 +42,23 @@ export class AlexaControllerService {
       namespace,
       correlationToken,
       messageId,
-      endpoint
+      endpoint,
+      instance
     }: {
       name: string
       namespace: string
       correlationToken?: string
       messageId?: string
       endpoint: any
+      instance?: string
     },
     payload: any
   ) {
     const deviceAlexa = new DeviceAlexa(device)
-    const state = await deviceAlexa.change({ name, namespace }, payload)
+    const state = await deviceAlexa.change(
+      { name, namespace, instance },
+      payload
+    )
     return {
       event: {
         header: {

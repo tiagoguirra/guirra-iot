@@ -1,0 +1,30 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint-config-standard",
+    "tslint-jest"
+  ],
+  "jsRules": {},
+  "linterOptions": {
+    "exclude": [
+      "node_modules",
+      "node_modules/**/*",      
+      "./tslint.json",
+      "dist/**"
+    ]
+  },
+  "rules": {
+    "await-promise": false,
+    "deprecation": true,
+    "no-floating-promises": false,
+    "no-unnecessary-qualifier": false,
+    "no-unnecessary-type-assertion": false,
+    "strict-type-predicates": false,
+    "indent": {
+      "options": ["spaces", 2]
+    },
+    "space-before-function-paren":false,
+    "triple-equals":false
+  },
+  "rulesDirectory": []
+}

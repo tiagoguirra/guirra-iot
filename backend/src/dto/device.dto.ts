@@ -2,7 +2,7 @@ import { ValidateNested, IsNotEmpty, IsOptional } from 'class-validator'
 import {
   DevicePropertyType,
   DeviceValue
-} from 'src/device/dto/device-property.dto'
+} from '../device/dto/device-property.dto'
 
 export class DeviceInputPropertyDto {
   @IsNotEmpty()
@@ -46,4 +46,10 @@ export class DeviceInputDto {
 export class DeviceChangeInput {
   property: DevicePropertyType
   value: DeviceValue | DeviceValue[]
+}
+
+export class DeviceEventInput {
+  property: DevicePropertyType
+  value: DeviceValue | DeviceValue[]
+  cause: string
 }

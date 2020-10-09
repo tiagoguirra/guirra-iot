@@ -62,9 +62,10 @@ export class AlexaController {
     @Body('device_id') deviceId: string,
     @Body('name') name: string,
     @Body('namespace') namespace: string,
+    @Body('endpoint') endpoint: any,
     @Body('correlationToken') correlationToken: string,
     @Body('messageId') messageId: string,
-    @Body('endpoint') endpoint: any,
+    @Body('instance') instance: string,
     @Body('payload') payload: any,
     @Res() res: Response
   ) {
@@ -77,7 +78,8 @@ export class AlexaController {
           namespace,
           endpoint,
           correlationToken,
-          messageId
+          messageId,
+          instance
         },
         payload
       )

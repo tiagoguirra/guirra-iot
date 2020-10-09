@@ -83,7 +83,7 @@ export default {
   },
   created() {
     this.getSatus()
-    this.interval = setInterval(() => this.getSatus(), 10000)
+    this.interval = setInterval(() => this.getSatus(), 500)
   },
   destroyed() {
     clearInterval(this.interval)

@@ -32,4 +32,5 @@ export abstract class PropertyCapability {
     { name, namespace }: { name: string; namespace: string },
     payload: any
   ): Promise<any>
+  abstract changeReport(value: any): any
 }

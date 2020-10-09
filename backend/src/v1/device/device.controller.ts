@@ -13,7 +13,11 @@ import {
 import { UserContext } from 'src/oauth/decorator/user.decorator'
 import { Response } from 'express'
 import * as _ from 'lodash'
-import { DeviceInputDto, DeviceChangeInput } from 'src/dto/device.dto'
+import {
+  DeviceInputDto,
+  DeviceChangeInput,
+  DeviceEventInput
+} from 'src/dto/device.dto'
 import { DeviceService } from 'src/device/service/device.service'
 import { AlexaEventService } from '../../alexa/service/alexa-event.service'
 import { DeviceHistoryService } from 'src/device/service/device-history.service'
@@ -25,6 +29,38 @@ export class DeviceController {
     private readonly AlexaEventService: AlexaEventService,
     private readonly DeviceHistoryService: DeviceHistoryService
   ) {}
+  @Post('/createOrUpdate')
+  async createOrUpdate(
+    @UserContext('user_id') userId: string,
+    @Body() _device: DeviceInputDto,
+    @Res() res: Response
+  ) {
+    try {
+      const device = await this.DeviceService.createOrUpdate(userId, _device)
+      if (device) {
+        this.AlexaEventService.AddOrUpdateReport(device.toJson())
+        return res.status(HttpStatus.CREATED).send(device)
+      }
+      return res.status(HttpStatus.NOT_FOUND).json({
+        error: [
+          {
+            message: 'Device not found',
+            code: 'device_not_found'
+          }
+        ]
+      })
+    } catch (err) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: [
+          {
+            message: _.get(err, 'message', 'Interal server error'),
+            code: _.get(err, 'code', '')
+          }
+        ]
+      })
+    }
+  }
+
   @Post('/')
   async register(
     @UserContext('user_id') userId: string,
@@ -295,6 +331,44 @@ export class DeviceController {
         orderDir
       })
       return res.status(HttpStatus.OK).send(historic)
+    } catch (err) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: [
+          {
+            message: _.get(err, 'message', 'Interal server error'),
+            code: _.get(err, 'code', '')
+          }
+        ]
+      })
+    }
+  }
+  @Post('/:id/event')
+  async event(
+    @Param('id') deviceId: string,
+    @UserContext('user_id') userId: string,
+    @Body() event: DeviceEventInput,
+    @Res() res: Response
+  ) {
+    try {
+      const device = await this.DeviceService.event(userId, deviceId, event)
+      if (device) {
+        await this.AlexaEventService.ChangeReport(device.toJson(), {
+          cause: event.cause,
+          property: event.property,
+          value: event.value
+        })
+        return res
+          .status(HttpStatus.ACCEPTED)
+          .json({ message: 'Change accepted' })
+      }
+      return res.status(HttpStatus.NOT_FOUND).json({
+        error: [
+          {
+            message: 'Device not found',
+            code: 'device_not_found'
+          }
+        ]
+      })
     } catch (err) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         error: [

@@ -78,6 +78,7 @@ export const handler = async (payload, context) => {
             endpoint: _.get(payload, 'directive.endpoint'),
             name: _.get(payload, 'directive.header.name'),
             namespace: _.get(payload, 'directive.header.namespace'),
+            instance: _.get(payload, 'directive.header.instance'),
             payload: _.get(payload, 'directive.payload'),
           },
           {

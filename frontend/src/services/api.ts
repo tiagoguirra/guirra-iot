@@ -26,7 +26,7 @@ const resolveToken = () => {
 const api = axios.create({
   baseURL: process.env.VUE_APP_API || null,
   transformRequest: (data, headers) => {
-    headers['authorization'] = resolveToken()
+    headers['authorization'] = 'Bearer ' + resolveToken()
     headers['Content-Type'] = 'application/json'
     return JSON.stringify(data)
   },

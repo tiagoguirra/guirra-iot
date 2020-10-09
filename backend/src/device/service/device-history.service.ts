@@ -36,7 +36,8 @@ export class DeviceHistoryService {
     const _changes = Array.isArray(changes) ? changes : [changes]
     const metadata: DeviceHistoricMetadata[] = _changes.map(item => ({
       type: item.property,
-      value: item.value
+      value: item.value,
+      cause: item.cause || ''
     }))
     const historic = this.DeviceHistoryRepository.create({
       device_id: deviceId,

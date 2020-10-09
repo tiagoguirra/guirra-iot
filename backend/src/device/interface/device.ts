@@ -5,11 +5,16 @@ import * as handlers from './handlers'
 import * as _ from 'lodash'
 import { DeviceShadow } from '../../device-shadow/device-shadow'
 import { capitalize } from 'lodash'
-import { DeviceShadowState } from 'src/device-shadow/device-shadow.dto'
+import { DeviceShadowValue } from '../../device-shadow/device-shadow.dto'
 import { DeviceSettings } from './device.dto'
+import { ModeHandler } from './handlers/modeHandler'
+
 export class Device {
   protected properties: {
     [name: string]: PropertyHandler
+  }
+  protected modes: {
+    [name: string]: ModeHandler
   }
   protected device: DeviceDto
   protected shadow: DeviceShadow
@@ -26,6 +31,13 @@ export class Device {
         }
       }
     }
+    for (const key in device.modes || []) {
+      const mode = device.modes[key]
+      this.modes = {
+        ...this.modes,
+        [mode.name]: new ModeHandler(mode.name, mode.values, this.shadow)
+      }
+    }
   }
 
   set(
@@ -33,10 +45,20 @@ export class Device {
     value: DeviceValue | DeviceValue[]
   ): Promise<void> {
     return new Promise((resolve, reject) => {
-      const prop = _.get(this.properties, property)
+      const prop = this.properties[property]
+      const mode = this.modes[property]
       if (prop) {
         return prop
           .set(value)
+          .then(() => resolve())
+          .catch(err =>
+            reject({
+              message: _.get(err, 'message', 'Failure to set property')
+            })
+          )
+      } else if (mode) {
+        return mode
+          .set(value as string)
           .then(() => resolve())
           .catch(err =>
             reject({
@@ -51,23 +73,30 @@ export class Device {
       }
     })
   }
-  get(property?: string): Promise<DeviceShadowState | DeviceShadowState[]> {
+  get(property?: string): Promise<DeviceShadowValue | DeviceShadowValue[]> {
     return new Promise(async (resolve, reject) => {
       try {
         if (property) {
           const prop = _.get(this.properties, property)
-          if (!prop) {
+          const mode = _.get(this.modes, property)
+          if (!prop && !mode) {
             throw new Error('Device do not suport this')
           }
-          const value = await prop.get()
+          const value = prop ? await prop.get() : await mode.get()
           return resolve(value)
         } else {
-          const values: DeviceShadowState[] = []
+          const values: DeviceShadowValue[] = []
           for (const key in this.properties) {
             const prop = this.properties[key]
             const value = await prop.get()
             values.push(value)
           }
+          for (const key in this.modes) {
+            const mode = this.modes[key]
+            const value = await mode.get()
+            values.push(value)
+          }
+
           return resolve(values)
         }
       } catch (err) {

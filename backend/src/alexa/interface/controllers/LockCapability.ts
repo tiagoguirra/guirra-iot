@@ -42,4 +42,13 @@ export class LockCapability extends PropertyCapability {
       uncertaintyInMilliseconds: 0
     }
   }
+  changeReport(value: string) {
+    return {
+      namespace: 'Alexa.LockController',
+      name: 'lockState',
+      value: value,
+      timeOfSample: new Date().toISOString(),
+      uncertaintyInMilliseconds: 0
+    }
+  }
 }

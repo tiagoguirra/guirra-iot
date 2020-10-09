@@ -54,4 +54,17 @@ export class ColorCapability extends PropertyCapability {
       uncertaintyInMilliseconds: 0
     }
   }
+  changeReport(value: string) {
+    return {
+      namespace: 'Alexa.ColorController',
+      name: 'color',
+      value: rgbToHsb(
+        _.get(value, 'red', 0),
+        _.get(value, 'green', 0),
+        _.get(value, 'blue', 0)
+      ),
+      timeOfSample: new Date().toISOString(),
+      uncertaintyInMilliseconds: 0
+    }
+  }
 }

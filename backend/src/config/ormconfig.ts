@@ -17,12 +17,12 @@ const config: ConnectionOptions = {
   username: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASS,
   database: process.env.DATABASE_NAME,
-  entities: ['./**/*.entity{.ts,.js}'],
+  entities: ['dist/**/*.entity{.js,.ts}'],
   synchronize: true,
   migrationsRun: true,
   logging: true,
   logger: 'file',
-  migrations: [path.resolve(__dirname, '..') + '/migrations/**/*{.ts,.js}'],
+  migrations: ['dist/migrations/**/*{.js,.ts}'],
   cli: {
     migrationsDir: 'migrations'
   },

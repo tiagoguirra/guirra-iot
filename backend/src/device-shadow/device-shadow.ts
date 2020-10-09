@@ -149,4 +149,24 @@ export class DeviceShadow {
         })
     })
   }
+  getConnectivity(): Promise<'disconnected' | 'connected'> {
+    return new Promise((resolve, reject) => {
+      this.requestState()
+        .then(({ payload }) => {
+          const timestamp = _.get(payload, ['timestamp'])
+          const lastReport = _.get(payload, [
+            'metadata',
+            'reported',
+            'config',
+            'device_name',
+            'timestamp'
+          ])
+          const diffTime = timestamp - lastReport
+          resolve(diffTime > 60000 ? 'disconnected' : 'connected')
+        })
+        .catch(err => {
+          reject(err)
+        })
+    })
+  }
 }

@@ -43,4 +43,13 @@ export class BrightnessCapability extends PropertyCapability {
       uncertaintyInMilliseconds: 0
     }
   }
+  changeReport(value: string) {
+    return {
+      namespace: 'Alexa.BrightnessController',
+      name: 'brightness',
+      value: value,
+      timeOfSample: new Date().toISOString(),
+      uncertaintyInMilliseconds: 0
+    }
+  }
 }

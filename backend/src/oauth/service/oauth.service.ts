@@ -87,10 +87,33 @@ export class OauthService {
     }
     return null
   }
+  async autorizationPassword(
+    clientId: string,
+    clientSecret: string,
+    username: string,
+    password: string,
+    scope?: string[]
+  ) {
+    const client = await this.ClientRepository.findOne({
+      client_id: clientId,
+      client_secret: clientSecret,
+      type: 'password'
+    })
+    const user = await this.UserService.findByEmail(username)
+    if (user && client && compareSync(password, user.password)) {
+      const code = await this.autorize(clientId, user.user_id, scope)
+      const tokens = await this.autorizationCode(
+        clientId,
+        client.redirect_url,
+        code.code
+      )
+      return tokens
+    }
+  }
 
   async autorizationRefreshToken(
     clientId: string,
-    redirectUri: string,
+    clientCheck: string,
     refreshToken: string
   ) {
     const payload: JwtToken = verify(refreshToken, this.publicCertificate(), {
@@ -111,7 +134,8 @@ export class OauthService {
           oldCode &&
           oldCode.client &&
           oldCode.client.client_id === clientId &&
-          oldCode.client.redirect_url === redirectUri
+          (oldCode.client.redirect_url === clientCheck ||
+            oldCode.client.client_secret === clientCheck)
         ) {
           const code = await this.autorize(
             clientId,
@@ -120,7 +144,7 @@ export class OauthService {
           )
           const tokens = await this.autorizationCode(
             clientId,
-            redirectUri,
+            oldCode.client.redirect_url,
             code.code
           )
           return tokens
@@ -173,8 +197,7 @@ export class OauthService {
       },
       cert,
       {
-        algorithm: 'RS256',
-        expiresIn
+        algorithm: 'RS256'
       }
     )
     return {
@@ -204,7 +227,11 @@ export class OauthService {
     return null
   }
   async verify(tokenBearer: string): Promise<OauthVerificationDto | null> {
-    const clearToken = tokenBearer.replace('Bearer ', '')
+    const splitCode = tokenBearer.split(' ')
+    const clearToken = _.get(splitCode, '1', '')
+    if (_.get(splitCode, '0', '').toLocaleLowerCase() !== 'bearer') {
+      return null
+    }
     const payload: JwtToken = verify(clearToken, this.publicCertificate(), {
       algorithms: ['RS256']
     }) as JwtToken

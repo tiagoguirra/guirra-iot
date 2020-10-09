@@ -6,6 +6,7 @@ export interface DeviceHistoricMetadata {
 export interface DeviceHistoricChanges {
   property: string
   value: any
+  cause?: string
 }
 
 export interface DeviceHistoricDto {}

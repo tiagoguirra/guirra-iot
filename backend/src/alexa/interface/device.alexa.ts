@@ -8,10 +8,14 @@ import {
   AlexaCategories
 } from '../dto/alexa-categories.dto'
 import { AlexaControllerMap } from '../dto/alexa-controller-map.dto'
+import { ModeCapability } from './controllers/ModeCapability'
 
 export class DeviceAlexa {
   protected capabilities: {
     [name: string]: PropertyCapability
+  }
+  protected modes: {
+    [name: string]: ModeCapability
   }
   protected device: DeviceDto
   protected shadow: DeviceShadow
@@ -32,11 +36,29 @@ export class DeviceAlexa {
         }
       }
     }
+
+    for (const key in device.modes || []) {
+      const mode = device.modes[key]
+      this.modes = {
+        ...this.modes,
+        [mode.name]: new ModeCapability(this.shadow, {
+          mode: mode.name,
+          values: mode.values,
+          initial: mode.initial,
+          proactively: true,
+          retrievable: true
+        })
+      }
+    }
   }
   discover() {
     const capabilities = []
     for (const key in this.capabilities) {
       capabilities.push(this.capabilities[key].discovery())
+    }
+
+    for (const key in this.modes) {
+      capabilities.push(this.modes[key].discovery())
     }
     const categories = (this.device.category || []).map(item =>
       _.get(DeviceMapCategories, item, AlexaCategories.OTHER)
@@ -54,6 +76,20 @@ export class DeviceAlexa {
           type: 'AlexaInterface',
           interface: 'Alexa',
           version: '3'
+        },
+        {
+          type: 'AlexaInterface',
+          interface: 'Alexa.EndpointHealth',
+          version: '3',
+          properties: {
+            supported: [
+              {
+                name: 'connectivity'
+              }
+            ],
+            proactivelyReported: true,
+            retrievable: true
+          }
         }
       ]
     }
@@ -61,16 +97,23 @@ export class DeviceAlexa {
   change(
     {
       name,
-      namespace
+      namespace,
+      instance
     }: {
       name: string
       namespace: string
+      instance?: string
     },
     payload: any
   ) {
     const handler = _.get(AlexaControllerMap, namespace)
     if (handler) {
       return this.capabilities[handler].change({ name, namespace }, payload)
+    } else if (namespace === 'Alexa.ModeController') {
+      const modeHandler = _.get(this.modes, instance)
+      if (modeHandler) {
+        return modeHandler.change({ instance }, payload)
+      }
     }
     throw new Error('Device not suport this')
   }
@@ -80,6 +123,44 @@ export class DeviceAlexa {
       const capability = this.capabilities[key]
       state.push(await capability.ReportState())
     }
-    return state
+    for (const key in this.modes) {
+      const mode = this.modes[key]
+      state.push(await mode.ReportState())
+    }
+    const connectivity = await this.shadow.getConnectivity()
+
+    return [
+      ...state,
+      {
+        namespace: 'Alexa.EndpointHealth',
+        name: 'connectivity',
+        timeOfSample: new Date().toISOString(),
+        uncertaintyInMilliseconds: 0,
+        value: {
+          value: connectivity === 'disconnected' ? 'UNREACHABLE' : 'OK'
+        }
+      }
+    ]
+  }
+  async changeReport(property: string, value: any) {
+    const state = []
+    const change = []
+    for (const key in this.capabilities) {
+      const capability = this.capabilities[key]
+      if (property === key) {
+        change.push(await capability.changeReport(value))
+      } else {
+        state.push(await capability.ReportState())
+      }
+    }
+    for (const key in this.modes) {
+      const mode = this.modes[key]
+      if (property === key) {
+        change.push(await mode.changeReport(value))
+      } else {
+        state.push(await mode.ReportState())
+      }
+    }
+    return { state, change }
   }
 }

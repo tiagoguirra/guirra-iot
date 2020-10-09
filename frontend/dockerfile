@@ -1,0 +1,14 @@
+FROM node:13.7
+
+WORKDIR /usr/src/app
+COPY . /usr/src/app
+
+
+run npm install
+run npm run build
+
+WORKDIR /usr/src/app/dist
+
+ENV ENVIRONMENT=production
+
+CMD ["npm","start"]

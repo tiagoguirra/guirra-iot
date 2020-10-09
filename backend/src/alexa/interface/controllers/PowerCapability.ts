@@ -42,4 +42,13 @@ export class PowerCapability extends PropertyCapability {
       uncertaintyInMilliseconds: 0
     }
   }
+  changeReport(value: string) {
+    return {
+      namespace: 'Alexa.PowerController',
+      name: 'powerState',
+      value: value,
+      timeOfSample: new Date().toISOString(),
+      uncertaintyInMilliseconds: 0
+    }
+  }
 }
