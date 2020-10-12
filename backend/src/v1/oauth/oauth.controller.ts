@@ -91,7 +91,7 @@ export class OauthController {
       if (grant === 'authorization_code') {
         tokens = await this.OauthService.autorizationCode(
           clientId,
-          redirectUri,
+          redirectUri || clientSecret,
           code
         )
       } else if (grant === 'refresh_token') {
@@ -146,6 +146,36 @@ export class OauthController {
   ) {
     try {
       const tokens = await this.OauthService.login(email, password)
+      if (tokens) {
+        return res.json(tokens)
+      } else {
+        return res.status(HttpStatus.UNAUTHORIZED).json({
+          error: [
+            {
+              message: 'Access denied ',
+              code: 401
+            }
+          ]
+        })
+      }
+    } catch (err) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: [
+          {
+            message: _.get(err, 'message', 'Interal server error'),
+            code: _.get(err, 'code', '')
+          }
+        ]
+      })
+    }
+  }
+  @Post('/login/refresh')
+  async loginRefreash(
+    @Body('refresh_token') refreshToken: string,
+    @Res() res: Response
+  ) {
+    try {
+      const tokens = await this.OauthService.loginRefresh(refreshToken)
       if (tokens) {
         return res.json(tokens)
       } else {

@@ -11,7 +11,7 @@
         thumb-label
         :thumb-size="24"
         v-model="model"
-        @change="onChange"
+        @change="changeDebounced"
       ></v-slider>
     </div>
   </div>
@@ -19,6 +19,8 @@
 
 <script>
 import propertyMixin from './propertyMixin.vue'
+import * as _ from 'lodash'
+
 export default {
   name: 'brightness',
   mixins: [propertyMixin],
@@ -29,6 +31,12 @@ export default {
       required: true,
     },
     type: String,
+  },
+  data: () => ({
+    changeDebounced: null,
+  }),
+  created() {
+    this.changeDebounced = _.debounce(value => this.onChange(value), 500)
   },
 }
 </script>

@@ -133,9 +133,7 @@ export class OauthService {
         if (
           oldCode &&
           oldCode.client &&
-          oldCode.client.client_id === clientId &&
-          (oldCode.client.redirect_url === clientCheck ||
-            oldCode.client.client_secret === clientCheck)
+          oldCode.client.client_id === clientId 
         ) {
           const code = await this.autorize(
             clientId,
@@ -222,6 +220,46 @@ export class OauthService {
           code.code
         )
         return tokens
+      }
+    }
+    return null
+  }
+  async loginRefresh(refreshToken: string) {
+    const payload: JwtToken = verify(refreshToken, this.publicCertificate(), {
+      algorithms: ['RS256']
+    }) as JwtToken
+    if (payload.type === 'refresh_token') {
+      const token = await this.TokenRepository.findOne({
+        refresh_token: payload.token
+      })
+      const client = await this.ClientRepository.findOne({
+        where: { default: Raw(alias => `${alias}`), type: 'password' }
+      })
+      if (token) {
+        const oldCode = await this.CodeRepository.findOne({
+          where: {
+            code_id: token.code_id
+          },
+          relations: ['client']
+        })
+        if (
+          oldCode &&
+          oldCode.client &&
+          oldCode.client.client_id === client.client_id &&
+          oldCode.client.client_secret === client.client_secret
+        ) {
+          const code = await this.autorize(
+            client.client_id,
+            payload.user_id,
+            oldCode.scopes
+          )
+          const tokens = await this.autorizationCode(
+            client.client_id,
+            oldCode.client.redirect_url,
+            code.code
+          )
+          return tokens
+        }
       }
     }
     return null

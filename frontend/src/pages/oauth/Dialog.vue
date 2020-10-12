@@ -94,7 +94,6 @@ export default {
   methods: {
     onAuthorize() {
       const { client_id, redirect_uri, state, scope } = this.$route.query
-      alert(scope)
       this.authorizeLoading = true
       this.$store
         .dispatch(AUTH_AUTORIZE, {

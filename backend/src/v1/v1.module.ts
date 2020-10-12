@@ -29,12 +29,16 @@ export class V1Module implements NestModule {
       .apply(OauthMiddleware)
       .exclude(
         {
-          path: 'v1/oauth/token',
-          method: RequestMethod.POST
+          path: '/v1/oauth/token',
+          method: RequestMethod.ALL
         },
         {
-          path: 'v1/oauth/login',
-          method: RequestMethod.POST
+          path: '/v1/oauth/login',
+          method: RequestMethod.ALL
+        },
+        {
+          path: '/v1/oauth/login/refresh',
+          method: RequestMethod.ALL
         }
       )
       .forRoutes(OauthController)

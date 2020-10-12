@@ -1,7 +1,8 @@
 import axios from 'axios'
 import moment from 'moment'
+import * as _ from 'lodash'
 
-const resolveToken = () => {
+const resolveToken = async () => {
   try {
     const {
       access_token = null,
@@ -16,8 +17,19 @@ const resolveToken = () => {
     if (expireAt > now) {
       return access_token
     } else {
-      // TODO: Refresh token login
-      return ''
+      const response = await axios.post('/v1/oauth/login/refresh', {
+        refresh_token,
+      })
+      window.localStorage.setItem(
+        'auth_user',
+        JSON.stringify({
+          access_token: _.get(response, 'data.access_token', ''),
+          refresh_token: _.get(response, 'data.refresh_token', ''),
+          expires_in: _.get(response, 'data.expires_in', ''),
+          created_at: new Date(),
+        })
+      )
+      return _.get(response, 'data.access_token', '')
     }
   } catch {
     return null
@@ -25,11 +37,16 @@ const resolveToken = () => {
 }
 const api = axios.create({
   baseURL: process.env.VUE_APP_API || null,
-  transformRequest: (data, headers) => {
-    headers['authorization'] = 'Bearer ' + resolveToken()
-    headers['Content-Type'] = 'application/json'
-    return JSON.stringify(data)
-  },
 })
+api.interceptors.request.use(
+  async function(options) {
+    options.headers['Authorization'] = 'Bearer ' + (await resolveToken())
+    return options
+  },
+  function(error) {
+    console.log('Request error: ', error)
+    return Promise.reject(error)
+  }
+)
 
 export default api
