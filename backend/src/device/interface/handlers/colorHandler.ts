@@ -28,10 +28,13 @@ export class ColorHandler extends PropertyHandler {
   }
 
   async set(value: DeviceValue): Promise<void> {
+    const red = _.get(value, 'red', 0)
+    const green = _.get(value, 'green', 0)
+    const blue = _.get(value, 'blue', 0)
     await this.shadow.updateState({
-      red: _.get(value, 'red', 0),
-      green: _.get(value, 'green', 0),
-      blue: _.get(value, 'blue', 0)
+      red: Number(Number(red).toFixed(4)),
+      green: Number(Number(green).toFixed(4)),
+      blue: Number(Number(blue).toFixed(4))
     })
   }
   async getInitial(): Promise<DeviceInitialState> {

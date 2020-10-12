@@ -42,8 +42,8 @@ export const handler = async (payload, context) => {
         break
       case 'Alexa':
         if (name === 'ReportState') {
-          response = await api.post(
-            '/v1/alexa/report',
+          response = await axios.post(
+            `${process.env.API_HOST}/v1/alexa/report`,
             {
               device_id: _.get(payload, 'directive.endpoint.endpointId'),
               correlationToken: _.get(
