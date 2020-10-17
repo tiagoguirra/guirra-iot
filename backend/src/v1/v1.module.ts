@@ -13,9 +13,16 @@ import { AlexaController } from './alexa/alexa.controller'
 import { DeviceController } from './device/device.controller'
 import { AlexaModule } from '../alexa/alexa.module'
 import { DeviceModule } from '../device/device.module'
+import { WebsocketModule } from '../websocket/websocket.module'
 
 @Module({
-  imports: [OauthModule, UserModule, AlexaModule, DeviceModule],
+  imports: [
+    OauthModule,
+    UserModule,
+    AlexaModule,
+    DeviceModule,
+    WebsocketModule
+  ],
   controllers: [
     OauthController,
     UserController,
@@ -33,8 +40,8 @@ export class V1Module implements NestModule {
           method: RequestMethod.ALL
         },
         {
-          path: '/v1/oauth/login',
-          method: RequestMethod.ALL
+          path: 'v1/oauth/login',
+          method: RequestMethod.POST
         },
         {
           path: '/v1/oauth/login/refresh',

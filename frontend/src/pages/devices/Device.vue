@@ -36,9 +36,20 @@
         v-for="item in properties"
         :key="item.name + '-' + device.device_id"
         :device-id="device.device_id"
-        :id="item.name + '-' + item.device_id"
+        :id="item.name + '-' + device.device_id"
         :category="category"
         :type="item.name"
+        @change="onChange"
+      />
+
+      <DeviceMode
+        v-for="item in modes"
+        :key="item.name + '-' + device.device_id"
+        :device-id="device.device_id"
+        :id="item.name + '-' + device.device_id"
+        :type="item.name"
+        :values="item.values"
+        :initial="item.initial"
         @change="onChange"
       />
     </template>
@@ -77,6 +88,8 @@ import {
 } from '@/store/actions/device'
 import * as _ from 'lodash'
 import DeviceProperty from '@/components/device/Property'
+import DeviceMode from '@/components/device/properties/mode'
+
 import {
   defaultProperty,
   categoryLabel,
@@ -86,7 +99,7 @@ import {
 } from '@/types/device-types'
 
 export default {
-  components: { SidePopup, DeviceProperty },
+  components: { SidePopup, DeviceProperty, DeviceMode },
   data: () => ({
     deviceId: '',
     device: '',
@@ -110,6 +123,9 @@ export default {
       return _.get(this.device, 'properties', []).filter(
         item => item.name !== this.defaultProp
       )
+    },
+    modes() {
+      return _.get(this.device, 'modes', [])
     },
     categoriesList() {
       return categories.map(item => ({

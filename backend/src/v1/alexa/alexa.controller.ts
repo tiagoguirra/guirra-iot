@@ -6,6 +6,9 @@ import { AlexaAuthorizationService } from '../../alexa/service/alexa-authorizati
 import { AlexaResponseService } from '../../alexa/service/alexa-response.service'
 import { DeviceService } from '../../device/service/device.service'
 import { AlexaControllerService } from '../../alexa/service/alexa-controller.service'
+import { WebSocketServer } from '@nestjs/websockets'
+import { Server } from 'socket.io'
+import { SocketService } from '../../websocket/service/socket.service'
 
 @Controller('v1/alexa')
 export class AlexaController {
@@ -13,8 +16,10 @@ export class AlexaController {
     private readonly AuthorizationService: AlexaAuthorizationService,
     private readonly ResponseService: AlexaResponseService,
     private readonly ChangeService: AlexaControllerService,
-    private readonly DeviceService: DeviceService
+    private readonly DeviceService: DeviceService,
+    private readonly SocketService: SocketService
   ) {}
+
   @Post('/authorization')
   async authorization(
     @Body('code') code: string,
@@ -83,6 +88,10 @@ export class AlexaController {
         },
         payload
       )
+
+      this.SocketService.sendRoom('events', userId, 'device_change', {
+        device_id: deviceId
+      })
       return res.send(response)
     } catch (err) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({

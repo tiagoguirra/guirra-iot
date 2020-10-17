@@ -1,5 +1,5 @@
 import { ERRORS_SHOW } from '../actions/errors'
-import { AUTH_LOGOUT } from '../actions/auth'
+import { AUTH_REFRESH } from '../actions/auth'
 import Vue from 'vue'
 import * as _ from 'lodash'
 import router from '../../router'
@@ -15,14 +15,7 @@ const actions = {
       switch (status) {
         case 401:
         case 403:
-          Vue.toasted.show(
-            _.get(errors, 'response.data.message', 'Access denied'),
-            {
-              type: 'error',
-            }
-          )
-          dispatch(AUTH_LOGOUT)
-          router.replace({ path: '/login' })
+          dispatch(AUTH_REFRESH)
           break
         default:
           if (Array.isArray(errosAlert)) {

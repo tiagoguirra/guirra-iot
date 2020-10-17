@@ -1,0 +1,56 @@
+version: '3'
+services:
+    database:
+        image: postgres
+        environment:
+            - POSTGRES_PASSWORD=guirraiot20
+            - POSTGRES_USER=postgres
+        ports:
+            - '5432:5432'
+        volumes:
+            - /home/iot/database:/var/lib/postgresql/data 
+        networks:
+            - iot-network
+    backend: 
+        container_name: backend
+        build: ./backend
+        ports: 
+            - '3001:3001'
+        environment: 
+            - ENVIRONMENT=production
+            - APP_HOST=0.0.0.0
+            - APP_PORT=3001
+            - DATABASE_HOST=postgres
+            - DATABASE_PORT=5432
+            - DATABASE_USER=postgres
+            - DATABASE_PASS=guirraiot20
+            - DATABASE_NAME=postgres
+            - AWS_IOT_ENDPOINT=a503o71qmgn7q-ats.iot.us-east-1.amazonaws.com
+            - AWS_KEY_ID=AKIA4USQYUDHTNYXYXYI
+            - AWS_KEY_SECRET=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
+            - AWS_REGION=us-east-1
+            - ALEXA_CLIENT_ID=amzn1.application-oa2-client.9c0a9bb1dc1841f19a812fcb0a4d014f
+            - ALEXA_CLIENT_SECRET=836d2c2b8d53ffbf6d89fa58bfa0b81e07716345bdbd2cecbfbcc1c59333390c
+        volumes:
+            - /home/iot/jwtRS256.key.pub:/dist/key/jwtRS256.key.pub
+            - /home/iot/jwtRS256.key:/dist/key/jwtRS256.key
+        depends_on:
+            - database
+        networks:
+        - iot-network
+    frontend: 
+        container_name: frontend
+        build: ./frontend
+        ports: 
+            - '4001:4001'
+        environment: 
+            - ENVIRONMENT=production
+            - APP_HOST=0.0.0.0
+        depends_on:
+            - backend
+        networks:
+        - iot-network
+            
+networks: 
+    iot-network:
+        driver: bridge

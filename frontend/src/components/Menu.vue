@@ -20,7 +20,6 @@ export default {
   methods: {
     logOut() {
       this.$store.dispatch(AUTH_LOGOUT)
-      setTimeout(() => this.$router.push('/login'), 200)
     },
   },
 }

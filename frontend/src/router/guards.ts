@@ -9,7 +9,6 @@ export const ifNotAuthenticated = (to: any, from: any, next: any) => {
 }
 
 export const ifAuthenticated = (to: any, from: any, next: any) => {
-  console.log({ to, from })
   if (store.getters.isAuthenticated) {
     next()
     return

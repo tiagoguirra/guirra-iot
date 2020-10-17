@@ -60,6 +60,10 @@ const getters = {
     deviceId: string,
     property: string
   ) => _.find(_.get(state.status, [deviceId], []), { property }) || {},
+  getDeviceModeStatus: (state: DeviceState) => (
+    deviceId: string,
+    mode: string
+  ) => _.find(_.get(state.status, [deviceId], []), { mode }) || {},
 }
 
 const actions = {

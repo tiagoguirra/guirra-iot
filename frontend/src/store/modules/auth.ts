@@ -3,13 +3,14 @@ import {
   AUTH_AUTORIZE,
   AUTH_LOGOUT,
   AUTH_LOGIN,
+  AUTH_REFRESH,
 } from '../actions/auth'
 import { ERRORS_SHOW } from '../actions/errors'
-import Api from '../../services/api'
 import * as _ from 'lodash'
 import { Dispatch, Commit } from 'vuex'
 import api from '../../services/api'
-
+import Vue from 'vue'
+import router from '../../router'
 export interface AuthState {
   access_token: string | null
   refresh_token: string | null
@@ -43,6 +44,7 @@ const savedToken = (): AuthState => {
 const state: AuthState = savedToken()
 const getters = {
   isAuthenticated: (state: AuthState) => !!state.access_token,
+  getRefreshToken: (state: AuthState) => state.refresh_token || '',
 }
 
 const actions = {
@@ -105,6 +107,7 @@ const actions = {
             token_type: _.get(resp, 'data.token_type'),
             expires_in: _.get(resp, 'data.expires_in'),
           })
+          Vue.prototype.$socketConnect(_.get(resp, 'data.access_token'))
           resolve(_.get(resp, 'data'))
         })
         .catch(err => {
@@ -115,6 +118,44 @@ const actions = {
   },
   [AUTH_LOGOUT]: ({ commit }: { commit: Commit }) => {
     commit(AUTH_LOGOUT)
+    Vue.prototype.$socketDisconnect()
+    router.replace({ path: '/login' })
+  },
+  [AUTH_REFRESH]: ({
+    commit,
+    dispatch,
+    getters,
+  }: {
+    commit: Commit
+    dispatch: Dispatch
+    getters: any
+  }) => {
+    if (getters.getRefreshToken) {
+      api
+        .post('/v1/oauth/login/refresh', {
+          refresh_token: getters.getRefreshToken,
+        })
+        .then(resp => {
+          commit(AUTH_LOGIN, {
+            access_token: _.get(resp, 'data.access_token'),
+            refresh_token: _.get(resp, 'data.refresh_token'),
+            token_type: _.get(resp, 'data.token_type'),
+            expires_in: _.get(resp, 'data.expires_in'),
+          })
+          Vue.prototype.$socketConnect(_.get(resp, 'data.access_token'))
+        })
+        .catch(() => {
+          dispatch(AUTH_LOGOUT)
+          Vue.toasted.show('Session expired', {
+            type: 'error',
+          })
+        })
+    } else {
+      dispatch(AUTH_LOGOUT)
+      Vue.toasted.show('Session expired', {
+        type: 'error',
+      })
+    }
   },
 }
 const mutations = {

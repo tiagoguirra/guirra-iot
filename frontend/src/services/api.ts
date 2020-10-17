@@ -1,8 +1,11 @@
 import axios from 'axios'
 import moment from 'moment'
 import * as _ from 'lodash'
+const api = axios.create({
+  baseURL: process.env.VUE_APP_API || null,
+})
 
-const resolveToken = async () => {
+export const resolveToken = async () => {
   try {
     const {
       access_token = null,
@@ -17,7 +20,7 @@ const resolveToken = async () => {
     if (expireAt > now) {
       return access_token
     } else {
-      const response = await axios.post('/v1/oauth/login/refresh', {
+      const response = await api.post('/v1/oauth/login/refresh', {
         refresh_token,
       })
       window.localStorage.setItem(
@@ -35,9 +38,7 @@ const resolveToken = async () => {
     return null
   }
 }
-const api = axios.create({
-  baseURL: process.env.VUE_APP_API || null,
-})
+
 api.interceptors.request.use(
   async function(options) {
     options.headers['Authorization'] = 'Bearer ' + (await resolveToken())

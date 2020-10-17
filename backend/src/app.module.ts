@@ -10,6 +10,7 @@ import { AlexaModule } from './alexa/alexa.module'
 import * as ormconfig from './config/ormconfig'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
+import { WebsocketModule } from './websocket/websocket.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { join } from 'path'
     V1Module,
     UserModule,
     DeviceModule,
-    AlexaModule
+    AlexaModule,
+    WebsocketModule
   ],
   controllers: [AppController],
   providers: [AppService]

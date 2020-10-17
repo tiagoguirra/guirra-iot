@@ -21,13 +21,15 @@ import {
 import { DeviceService } from 'src/device/service/device.service'
 import { AlexaEventService } from '../../alexa/service/alexa-event.service'
 import { DeviceHistoryService } from 'src/device/service/device-history.service'
+import { SocketService } from '../../websocket/service/socket.service'
 
 @Controller('v1/device')
 export class DeviceController {
   constructor(
     private readonly DeviceService: DeviceService,
     private readonly AlexaEventService: AlexaEventService,
-    private readonly DeviceHistoryService: DeviceHistoryService
+    private readonly DeviceHistoryService: DeviceHistoryService,
+    private readonly SocketService: SocketService
   ) {}
   @Post('/createOrUpdate')
   async createOrUpdate(
@@ -293,6 +295,9 @@ export class DeviceController {
     try {
       const device = await this.DeviceService.change(userId, deviceId, property)
       if (device) {
+        this.SocketService.sendRoom('events', userId, 'device_change', {
+          device_id: deviceId
+        })
         return res.status(HttpStatus.OK).send(device.toJson())
       }
       return res.status(HttpStatus.NOT_FOUND).json({
