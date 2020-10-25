@@ -22,7 +22,10 @@ const websocket = {
       Vue.prototype.$socket.on('device_change', (body: any) => {
         const deviceId = _.get(body, 'device_id')
         if (deviceId) {
-          store.dispatch(DEVICE_STATUS, { deviceId: deviceId })
+          setTimeout(
+            () => store.dispatch(DEVICE_STATUS, { deviceId: deviceId }),
+            1000
+          )
         }
       })
     }

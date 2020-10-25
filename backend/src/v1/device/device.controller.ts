@@ -362,6 +362,9 @@ export class DeviceController {
           property: event.property,
           value: event.value
         })
+        this.SocketService.sendRoom('events', userId, 'device_change', {
+          device_id: deviceId
+        })
         return res
           .status(HttpStatus.ACCEPTED)
           .json({ message: 'Change accepted' })

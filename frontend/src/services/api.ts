@@ -2,7 +2,7 @@ import axios from 'axios'
 import moment from 'moment'
 import * as _ from 'lodash'
 const api = axios.create({
-  baseURL: process.env.VUE_APP_API || null,
+  baseURL: process.env.VUE_APP_API || undefined,
 })
 
 export const resolveToken = async () => {
