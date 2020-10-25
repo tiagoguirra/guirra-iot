@@ -143,6 +143,10 @@ const actions = {
             expires_in: _.get(resp, 'data.expires_in'),
           })
           Vue.prototype.$socketConnect(_.get(resp, 'data.access_token'))
+          router.replace({ path: '/' })
+          Vue.toasted.show('Updated session', {
+            type: 'info',
+          })
         })
         .catch(() => {
           dispatch(AUTH_LOGOUT)
